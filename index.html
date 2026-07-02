@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>AmpShield — Vulnerability Management</title>
 <style>
 /* ===== DESIGN TOKENS — Ampere-themed ===== */
@@ -2114,26 +2117,53 @@ document.querySelectorAll('#page-setup .btn').forEach(btn => {
 
 // ===== CSV EXPORT =====
 function exportCSV() {
-  const active = FINDINGS.filter(f => f.state === 'Active');
+  // Get currently visible findings from the dashboard table, or fall back to all active
+  const rows = document.querySelectorAll('#page-dashboard tbody tr');
+  let data;
+  if (rows.length > 0 && rows[0].querySelector('.mono')) {
+    data = [...rows].map(r => {
+      const cells = r.querySelectorAll('td');
+      return {
+        cve: cells[0]?.textContent?.trim() || '',
+        check: cells[1]?.textContent?.trim() || '',
+        asset: cells[2]?.textContent?.trim() || '',
+        port: cells[3]?.textContent?.trim() || '',
+        severity: cells[4]?.textContent?.trim() || '',
+        state: cells[5]?.textContent?.trim() || '',
+        kev: cells[6]?.textContent?.includes('⚠') ? 'Yes' : 'No',
+        firstSeen: cells[7]?.textContent?.trim() || '',
+      };
+    });
+  }
+  if (!data || data.length === 0) {
+    const active = FINDINGS.filter(f => f.state === 'Active');
+    data = active.map(f => ({cve: f.cve, check: f.check, asset: f.asset, port: f.port, severity: f.severity, state: f.state, kev: f.kev?'Yes':'No', firstSeen: f.firstSeen}));
+  }
   const headers = ['CVE','Check/Plugin','Asset','Port','Severity','State','KEV','First Seen'];
-  const rows = active.map(f => [f.cve, `"${f.check}"`, f.asset, f.port, f.severity, f.state, f.kev?'Yes':'No', f.firstSeen]);
-  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const csv = [headers.join(','), ...data.map(d => [d.cve, `"${d.check}"`, d.asset, d.port, d.severity, d.state, d.kev, d.firstSeen].join(','))].join('\n');
   const blob = new Blob([csv], {type: 'text/csv'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = `ampshield-findings-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast(`✓ Exported ${rows.length} active findings to CSV`);
+  showToast(`✓ Exported ${data.length} findings to CSV`);
 }
 
-// Replace old export buttons
+// Hook export buttons — run on load and after every navigation
 function hookExportButtons() {
   document.querySelectorAll('.btn').forEach(btn => {
-    if (btn.textContent.includes('Export CSV')) btn.onclick = exportCSV;
+    if (btn.textContent.includes('Export CSV') && !btn.dataset.hooked) {
+      btn.onclick = exportCSV;
+      btn.dataset.hooked = '1';
+    }
   });
 }
-setTimeout(hookExportButtons, 200);
+setTimeout(hookExportButtons, 100);
+setTimeout(hookExportButtons, 500);
+setTimeout(hookExportButtons, 1500);
 
 // ===== INIT =====
 updateDashboardStats();
