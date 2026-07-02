@@ -1397,6 +1397,32 @@ const FINDINGS = [
 ];
 FINDINGS.forEach((f,i) => { f.id = i; });
 
+// ===== DISPOSITIONS — per-finding decision state =====
+const DISPOSITIONS = {
+  'Open': { color: 'var(--text-muted)', label: 'Open' },
+  'Risk Accepted': { color: 'var(--warning)', label: 'Risk Accepted' },
+  'Ticket Created': { color: 'var(--info)', label: 'Ticket Created' },
+  'Mitigation Applied': { color: 'var(--accent)', label: 'Mitigation Applied' },
+  'OS Exception': { color: 'var(--medium)', label: 'OS Exception' },
+  'False Positive': { color: 'var(--low)', label: 'False Positive' },
+  'Deferred': { color: 'var(--text-secondary)', label: 'Deferred' },
+};
+// Assign dispositions based on asset/CVE patterns
+FINDINGS.forEach(f => {
+  if (f.state === 'Fixed') f.disposition = 'Mitigation Applied';
+  else if (f.state === 'Actioned') f.disposition = 'Ticket Created';
+  else if (f.asset === 'DC-PROD-01' && f.cve === 'CVE-2026-08912') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'DB-PROD-02' && f.cve === 'CVE-2026-04567') f.disposition = 'Deferred';
+  else if (f.asset === 'APP-PROD-07' && f.cve === 'CVE-2026-09876') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'MAC-DESIGN-03' && f.cve === 'CVE-2026-41001') f.disposition = 'OS Exception';
+  else if (f.asset === 'WEB-PROD-05' && f.cve === 'CVE-2026-22334') f.disposition = 'False Positive';
+  else if (f.asset === 'CSW-DIST-01') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'PRINT-SRV-01' && f.cve === 'CVE-2026-11223') f.disposition = 'Ticket Created';
+  else if (f.asset === 'K8S-PROD-02' && f.cve === 'CVE-2026-04567') f.disposition = 'Deferred';
+  else if (f.asset === 'SAN-CTRL-01') f.disposition = 'OS Exception';
+  else f.disposition = 'Open';
+});
+
 // ===== WATCH STATE =====
 let watchState = {};
 // Default watched: CVE-2026-12345, CVE-2026-11223, CVE-2026-33445, CVE-2026-25501, CVE-2026-29100
@@ -1466,6 +1492,12 @@ function setActiveNav(page) {
   const navPage = parentMap[page] || page;
   const navItem = document.querySelector(`[data-page="${navPage}"]`);
   if (navItem) navItem.classList.add('active');
+}
+
+function filterCVEDisposition(val) {
+  document.querySelectorAll('#cveActiveBody tr').forEach(row => {
+    row.style.display = (val === 'All' || row.dataset.disposition === val) ? '' : 'none';
+  });
 }
 
 // ===== RENDER EXECUTIVE PAGE =====
@@ -1701,8 +1733,17 @@ function renderCVEDetail(cveId) {
       <button class="tab" onclick="switchTab(this,'cve-resolved')">Resolved (${FINDINGS.filter(f=>f.cve===cveId&&f.state==='Fixed').length})</button>
     </div>
     <div id="tab-cve-active" class="card" style="display:block">
-      <table><thead><tr><th>Asset</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>First Seen</th><th>Last Observed</th></tr></thead>
-      <tbody>${FINDINGS.filter(f=>f.cve===cveId&&f.state==='Active').map(f=>`<tr class="clickable" onclick="viewAsset('${f.asset}')"><td class="mono text-link">${f.asset}</td><td>${f.check}</td><td class="mono">${f.port}</td><td><span class="badge badge-${f.severity.toLowerCase()}">${f.severity}</span></td><td style="font-size:12px;color:var(--text-muted)">${f.firstSeen}</td><td style="font-size:12px;color:var(--text-muted)">2026-06-28</td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:24px">No active findings</td></tr>'}</tbody></table>
+      <div style="margin-bottom:10px">
+        <select class="input input-sm" onchange="filterCVEDisposition(this.value)" style="font-size:12px;padding:4px 8px">
+          <option value="All">All Dispositions</option>
+          ${[...new Set(FINDINGS.filter(f=>f.cve===cveId&&f.state==='Active').map(f=>f.disposition))].map(d=>`<option>${d}</option>`).join('')}
+        </select>
+      </div>
+      <table><thead><tr><th>Asset</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>Disposition</th><th>First Seen</th><th>Last Observed</th></tr></thead>
+      <tbody id="cveActiveBody">${FINDINGS.filter(f=>f.cve===cveId&&f.state==='Active').map(f=>{
+        const d = DISPOSITIONS[f.disposition] || DISPOSITIONS['Open'];
+        return `<tr data-disposition="${f.disposition}"><td class="mono text-link" style="cursor:pointer" onclick="viewAsset('${f.asset}')">${f.asset}</td><td>${f.check}</td><td class="mono">${f.port}</td><td><span class="badge badge-${f.severity.toLowerCase()}">${f.severity}</span></td><td><span class="badge" style="background:${d.color}20;color:${d.color};border:1px solid ${d.color}40">${d.label}</span></td><td style="font-size:12px;color:var(--text-muted)">${f.firstSeen}</td><td style="font-size:12px;color:var(--text-muted)">2026-06-28</td></tr>`;
+      }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">No active findings</td></tr>'}</tbody></table>
     </div>
     <div id="tab-cve-actioned" class="card" style="display:none">
       <table><thead><tr><th>Asset</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>Status</th><th>Owner</th><th>Notes</th></tr></thead>
@@ -1955,7 +1996,8 @@ function renderAssetsPage() {
     <div class="filters">
       <input class="input" placeholder="Search asset name, IP..." style="width:240px" id="assetsSearch" oninput="filterGlobalAssets(this.value)">
       <select class="input" onchange="filterGlobalAssets(document.getElementById('assetsSearch')?.value||'')"><option>All Sites</option><option>US-East</option><option>US-West</option><option>EU-Central</option></select>
-      <select class="input" onchange="filterGlobalAssets(document.getElementById('assetsSearch')?.value||'')"><option>All OS</option><option>Windows Server 2022</option><option>Ubuntu 22.04 LTS</option><option>RHEL 9.3</option><option>PAN-OS</option><option>Dell EMC</option></select>
+      <select class="input" onchange="filterGlobalAssets(document.getElementById('assetsSearch')?.value||'')"><option>All OS</option><option>Windows Server 2022</option><option>Ubuntu 22.04 LTS</option><option>RHEL 9.3</option><option>PAN-OS</option><option>Dell EMC</option><option>macOS</option></select>
+      <select class="input" onchange="filterGlobalAssets(document.getElementById('assetsSearch')?.value||'')" id="assetDispFilter"><option>All Dispositions</option>${[...new Set(allAssets.flatMap(a=>FINDINGS.filter(f=>f.asset===a.name&&f.state==='Active').map(f=>f.disposition)))].map(d=>`<option>${d}</option>`).join('')}</select>
       <span style="font-size:13px;color:var(--text-secondary);margin-left:auto">${allAssets.length} assets across ${Object.keys(TEAMS).length} teams</span>
     </div>
     <div class="card">
@@ -1970,14 +2012,17 @@ function filterGlobalAssets(query) {
   const q = (query || '').toLowerCase();
   const siteFilter = document.querySelector('#page-assets select:nth-of-type(1)')?.value || 'All Sites';
   const osFilter = document.querySelector('#page-assets select:nth-of-type(2)')?.value || 'All OS';
+  const dispFilter = document.getElementById('assetDispFilter')?.value || 'All Dispositions';
   document.querySelectorAll('#globalAssetsBody tr').forEach(row => {
     const text = row.textContent.toLowerCase();
     const site = row.dataset.site || '';
     const os = row.dataset.os || '';
+    const name = row.querySelector('td')?.textContent?.trim() || '';
     const matchSearch = !q || text.includes(q);
     const matchSite = siteFilter === 'All Sites' || site.includes(siteFilter);
     const matchOS = osFilter === 'All OS' || os.includes(osFilter);
-    row.style.display = matchSearch && matchSite && matchOS ? '' : 'none';
+    const matchDisp = dispFilter === 'All Dispositions' || FINDINGS.some(f => f.asset === name && f.state === 'Active' && f.disposition === dispFilter);
+    row.style.display = matchSearch && matchSite && matchOS && matchDisp ? '' : 'none';
   });
 }
 // ===== RENDER RECENTLY FIXED =====
