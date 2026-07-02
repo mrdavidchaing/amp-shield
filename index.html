@@ -921,6 +921,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">1,204</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">48</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">312</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">24</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('platform')">
@@ -930,6 +931,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">892</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">31</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">204</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">18</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('secops')">
@@ -939,6 +941,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">673</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">22</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">156</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">8</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('apps')">
@@ -948,6 +951,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">541</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">19</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">98</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">13</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('db')">
@@ -957,6 +961,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">387</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">15</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">89</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">3</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('euc')">
@@ -966,6 +971,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">150</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">7</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">32</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">2</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
           <div class="team-card" onclick="viewTeam('endpoint')">
@@ -975,6 +981,7 @@ select.input { cursor: pointer; }
               <div class="team-stat"><div class="team-stat-val">218</div><div class="team-stat-label">Total</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--critical)">8</div><div class="team-stat-label">Critical</div></div>
               <div class="team-stat"><div class="team-stat-val" style="color:var(--high)">47</div><div class="team-stat-label">High</div></div>
+              <div class="team-stat"><div class="team-stat-val" style="color:var(--danger)">6</div><div class="team-stat-label">KEV</div></div>
             </div>
           </div>
         </div>
@@ -1562,6 +1569,7 @@ function renderTeamDetail() {
         <div class="kpi-item"><div class="kpi-value" style="color:var(--low)">${t.low}</div><div class="kpi-label">Low</div><div class="kpi-delta">${delta(t.deltaLow)} vs last month</div></div>
         <div class="kpi-item"><div class="kpi-value" style="color:var(--danger)">${t.unactioned}</div><div class="kpi-label">Unactioned</div><div class="kpi-delta">${delta(t.deltaUnact)} vs last month</div></div>
         <div class="kpi-item"><div class="kpi-value" style="color:var(--warning)">${t.aged}</div><div class="kpi-label">Aged > 90d</div><div class="kpi-delta">${delta(t.deltaAged)} vs last month</div></div>
+        <div class="kpi-item"><div class="kpi-value" style="color:var(--danger)">${(()=>{const k=FINDINGS.filter(f=>f.kev&&f.state==='Active'&&t.assets_list.some(a=>a.name===f.asset));return k.length;})()}</div><div class="kpi-label">KEV Exploited</div><div class="kpi-delta"></div></div>
       </div>
     </div>
     <div class="tabs" id="teamDetailTabs">
@@ -1575,9 +1583,9 @@ function renderTeamDetail() {
         <span style="font-size:13px;color:var(--text-secondary)">${t.assets} assets in scope</span>
         <input class="input" placeholder="Filter assets..." style="width:200px" oninput="filterAssetsTable(this.value)">
       </div>
-      <table><thead><tr><th>Asset</th><th>IP</th><th>OS</th><th>Site</th><th>Active CVEs</th><th>Critical</th><th>High</th><th>Last Seen</th></tr></thead>
+      <table><thead><tr><th>Asset</th><th>IP</th><th>OS</th><th>Site</th><th>Active CVEs</th><th>Critical</th><th>High</th><th>KEV</th><th>Last Seen</th></tr></thead>
       <tbody id="teamAssetsBody">
-        ${t.assets_list.map(a => `<tr class="clickable" onclick="viewAsset('${a.name}')"><td class="mono text-link">${a.name}</td><td class="mono">${a.ip}</td><td>${a.os}</td><td>${a.site}</td><td class="mono">${a.cves}</td><td style="color:var(--critical)">${a.crit}</td><td style="color:var(--high)">${a.high}</td><td style="font-size:12px;color:var(--text-muted)">${a.seen}</td></tr>`).join('')}
+        ${t.assets_list.map(a => `<tr class="clickable" onclick="viewAsset('${a.name}')"><td class="mono text-link">${a.name}</td><td class="mono">${a.ip}</td><td>${a.os}</td><td>${a.site}</td><td class="mono">${a.cves}</td><td style="color:var(--critical)">${a.crit}</td><td style="color:var(--high)">${a.high}</td><td style="color:var(--danger)">${(()=>{const k=FINDINGS.filter(f=>f.asset===a.name&&f.kev&&f.state==='Active').length;return k>0?'⚠ '+k:'—';})()}</td><td style="font-size:12px;color:var(--text-muted)">${a.seen}</td></tr>`).join('')}
       </tbody></table>
     </div>
     <div id="tab-team-findings" class="card" style="display:none">
@@ -1911,7 +1919,10 @@ function renderAssetsPage() {
   const page = document.getElementById('page-assets');
   const allAssets = [];
   for (const [slug, t] of Object.entries(TEAMS)) {
-    t.assets_list.forEach(a => allAssets.push({...a, team: t.name}));
+    t.assets_list.forEach(a => {
+      const kevCount = FINDINGS.filter(f => f.asset === a.name && f.kev && f.state === 'Active').length;
+      allAssets.push({...a, team: t.name, kev: kevCount});
+    });
   }
   allAssets.sort((a,b) => b.cves - a.cves);
 
@@ -1923,9 +1934,9 @@ function renderAssetsPage() {
       <span style="font-size:13px;color:var(--text-secondary);margin-left:auto">${allAssets.length} assets across ${Object.keys(TEAMS).length} teams</span>
     </div>
     <div class="card">
-      <table><thead><tr><th>Asset</th><th>IP</th><th>OS</th><th>Site</th><th>Team</th><th>CVEs</th><th>Critical</th><th>High</th><th>Last Seen</th></tr></thead>
+      <table><thead><tr><th>Asset</th><th>IP</th><th>OS</th><th>Site</th><th>Team</th><th>CVEs</th><th>Critical</th><th>High</th><th>KEV</th><th>Last Seen</th></tr></thead>
       <tbody id="globalAssetsBody">
-        ${allAssets.map(a => `<tr class="clickable" onclick="viewAsset('${a.name}')" data-site="${a.site}" data-os="${a.os}"><td class="mono text-link">${a.name}</td><td class="mono">${a.ip}</td><td>${a.os}</td><td>${a.site}</td><td>${a.team}</td><td class="mono">${a.cves}</td><td style="color:var(--critical)">${a.crit}</td><td style="color:var(--high)">${a.high}</td><td style="font-size:12px;color:var(--text-muted)">${a.seen}</td></tr>`).join('')}
+        ${allAssets.map(a => `<tr class="clickable" onclick="viewAsset('${a.name}')" data-site="${a.site}" data-os="${a.os}"><td class="mono text-link">${a.name}</td><td class="mono">${a.ip}</td><td>${a.os}</td><td>${a.site}</td><td>${a.team}</td><td class="mono">${a.cves}</td><td style="color:var(--critical)">${a.crit}</td><td style="color:var(--high)">${a.high}</td><td style="color:var(--danger)">${a.kev > 0 ? '⚠ ' + a.kev : '—'}</td><td style="font-size:12px;color:var(--text-muted)">${a.seen}</td></tr>`).join('')}
       </tbody></table>
     </div>`;
 }
