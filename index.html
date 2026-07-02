@@ -719,78 +719,7 @@ select.input { cursor: pointer; }
       </div>
 
       <!-- ========== EXECUTIVE ========== -->
-      <div class="page" id="page-executive">
-        <div class="kpi-strip">
-          <div class="kpi-item"><div class="kpi-value">3,847</div><div class="kpi-label">Total Active</div><div class="kpi-delta down">↓ 12% from last month</div></div>
-          <div class="kpi-item"><div class="kpi-value" style="color:var(--critical)">142</div><div class="kpi-label">Critical</div><div class="kpi-delta down">↓ 8% from last month</div></div>
-          <div class="kpi-item"><div class="kpi-value">2,104</div><div class="kpi-label">Distinct CVEs</div><div class="kpi-delta down">↓ 5% from last month</div></div>
-          <div class="kpi-item"><div class="kpi-value" style="color:var(--success)">87%</div><div class="kpi-label">Critical SLA Met</div><div class="kpi-delta up" style="color:var(--success)">↑ 3%</div></div>
-          <div class="kpi-item"><div class="kpi-value">412</div><div class="kpi-label">Assets Scanned</div><div class="kpi-delta up">↑ 14 new</div></div>
-        </div>
-
-        <div class="cols">
-          <div class="card">
-            <div class="card-title" style="margin-bottom:16px">Severity Breakdown</div>
-            <div class="donut-wrap">
-              <svg width="180" height="180" viewBox="0 0 180 180">
-                <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-hover)" stroke-width="24"/>
-                <circle cx="90" cy="90" r="70" fill="none" stroke="#ef4444" stroke-width="24"
-                  stroke-dasharray="440" stroke-dashoffset="396" transform="rotate(-90 90 90)"/>
-                <circle cx="90" cy="90" r="70" fill="none" stroke="#f97316" stroke-width="24"
-                  stroke-dasharray="440" stroke-dashoffset="300" transform="rotate(-90 90 90)"/>
-                <circle cx="90" cy="90" r="70" fill="none" stroke="#eab308" stroke-width="24"
-                  stroke-dasharray="440" stroke-dashoffset="160" transform="rotate(-90 90 90)"/>
-                <circle cx="90" cy="90" r="70" fill="none" stroke="#22c55e" stroke-width="24"
-                  stroke-dasharray="440" stroke-dashoffset="28" transform="rotate(-90 90 90)"/>
-                <text x="90" y="86" text-anchor="middle" fill="var(--text-primary)" font-size="22" font-weight="700">3,847</text>
-                <text x="90" y="106" text-anchor="middle" fill="var(--text-muted)" font-size="11">Total</text>
-              </svg>
-              <div class="donut-legend">
-                <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#ef4444"></span> Critical (3.7%)</div>
-                <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#f97316"></span> High (23.2%)</div>
-                <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#eab308"></span> Medium (42.2%)</div>
-                <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#22c55e"></span> Low (30.9%)</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-title" style="margin-bottom:16px">Team Breakdown (Top 5)</div>
-            <table>
-              <thead><tr><th>Team</th><th>Total</th><th>Critical</th><th>High</th><th>Trend</th></tr></thead>
-              <tbody>
-                <tr><td>Infrastructure</td><td class="mono">1,204</td><td style="color:var(--critical)">48</td><td style="color:var(--high)">312</td><td style="color:var(--success)">↓ 18</td></tr>
-                <tr><td>Platform Engineering</td><td class="mono">892</td><td style="color:var(--critical)">31</td><td style="color:var(--high)">204</td><td style="color:var(--success)">↓ 7</td></tr>
-                <tr><td>Security Operations</td><td class="mono">673</td><td style="color:var(--critical)">22</td><td style="color:var(--high)">156</td><td style="color:var(--danger)">↑ 12</td></tr>
-                <tr><td>Application Services</td><td class="mono">541</td><td style="color:var(--critical)">19</td><td style="color:var(--high)">98</td><td style="color:var(--success)">↓ 3</td></tr>
-                <tr><td>Database & Storage</td><td class="mono">387</td><td style="color:var(--critical)">15</td><td style="color:var(--high)">89</td><td style="color:var(--success)">↓ 22</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Trend chart (simplified SVG) -->
-        <div class="card">
-          <div class="card-title" style="margin-bottom:16px">30-Day Trend — Active Findings</div>
-          <svg width="100%" height="200" viewBox="0 0 800 200" style="background:var(--bg-elevated);border-radius:var(--radius-sm)">
-            <polyline points="20,180 98,172 176,165 254,158 332,148 410,140 488,135 566,128 644,122 722,115 780,110"
-              fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="20" cy="180" r="3" fill="var(--accent)"/>
-            <circle cx="410" cy="140" r="3" fill="var(--accent)"/>
-            <circle cx="780" cy="110" r="4" fill="var(--accent)"/>
-            <text x="20" y="195" fill="var(--text-muted)" font-size="10" text-anchor="middle">Jun 1</text>
-            <text x="410" y="195" fill="var(--text-muted)" font-size="10" text-anchor="middle">Jun 14</text>
-            <text x="780" y="195" fill="var(--text-muted)" font-size="10" text-anchor="middle">Jun 28</text>
-            <text x="780" y="105" fill="var(--accent)" font-size="11" font-weight="600">3,847</text>
-            <line x1="20" y1="20" x2="780" y2="20" stroke="var(--border)" stroke-dasharray="4"/>
-            <text x="15" y="24" fill="var(--text-muted)" font-size="9">4,200</text>
-            <line x1="20" y1="100" x2="780" y2="100" stroke="var(--border)" stroke-dasharray="4"/>
-            <text x="15" y="104" fill="var(--text-muted)" font-size="9">3,800</text>
-            <line x1="20" y1="180" x2="780" y2="180" stroke="var(--border)" stroke-dasharray="4"/>
-            <text x="15" y="184" fill="var(--text-muted)" font-size="9">3,400</text>
-          </svg>
-        </div>
-      </div>
+      <div class="page" id="page-executive"></div>
 
       <!-- ========== CVE DETAIL ========== -->
       <div class="page" id="page-cve-detail">
@@ -1511,6 +1440,7 @@ function navigateTo(page) {
   document.getElementById('content').scrollTop = 0;
 
   if (page === 'teams-detail') renderTeamDetail();
+  if (page === 'executive') renderExecutivePage();
   if (page === 'cve-detail') renderCVEDetail();
   if (page === 'asset-detail') renderAssetDetail();
   if (page === 'assets') renderAssetsPage();
@@ -1536,6 +1466,101 @@ function setActiveNav(page) {
   const navPage = parentMap[page] || page;
   const navItem = document.querySelector(`[data-page="${navPage}"]`);
   if (navItem) navItem.classList.add('active');
+}
+
+// ===== RENDER EXECUTIVE PAGE =====
+function renderExecutivePage() {
+  const active = FINDINGS.filter(f => f.state === 'Active');
+  const critical = active.filter(f => f.severity === 'Critical');
+  const high = active.filter(f => f.severity === 'High');
+  const medium = active.filter(f => f.severity === 'Medium');
+  const low = active.filter(f => f.severity === 'Low');
+  const kev = active.filter(f => f.kev);
+  const distinct = [...new Set(active.map(f => f.cve))];
+  const totalAssets = [...new Set(active.map(f => f.asset))];
+  const total = active.length;
+
+  // Team breakdown with KEV
+  const teamRows = Object.entries(TEAMS).map(([slug, t]) => {
+    const teamKEV = FINDINGS.filter(f => f.kev && f.state === 'Active' && t.assets_list.some(a => a.name === f.asset)).length;
+    return { name: t.name, total: t.total, critical: t.critical, high: t.high, kev: teamKEV, delta: t.deltaTotal };
+  }).sort((a,b) => b.total - a.total);
+
+  const page = document.getElementById('page-executive');
+
+  page.innerHTML = `
+    <div class="kpi-strip">
+      <div class="kpi-item"><div class="kpi-value">${total}</div><div class="kpi-label">Total Active</div><div class="kpi-delta down" style="color:var(--success)">Last scan: 2026-06-28</div></div>
+      <div class="kpi-item"><div class="kpi-value" style="color:var(--critical)">${critical.length}</div><div class="kpi-label">Critical</div><div class="kpi-delta down" style="color:var(--success)">${critical.length} active</div></div>
+      <div class="kpi-item"><div class="kpi-value">${distinct.length}</div><div class="kpi-label">Distinct CVEs</div><div class="kpi-delta" style="color:var(--text-muted)">Across ${totalAssets.length} assets</div></div>
+      <div class="kpi-item"><div class="kpi-value" style="color:var(--danger)">${kev.length}</div><div class="kpi-label">KEV Exploited</div><div class="kpi-delta" style="color:var(--danger)">CISA Catalog matches</div></div>
+      <div class="kpi-item"><div class="kpi-value">${totalAssets.length}</div><div class="kpi-label">Assets Affected</div><div class="kpi-delta" style="color:var(--text-muted)">7 teams</div></div>
+    </div>
+
+    <div class="cols">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Severity Breakdown</div>
+        <div class="donut-wrap">
+          <svg width="180" height="180" viewBox="0 0 180 180">
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--bg-hover)" stroke-width="24"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#ff4444" stroke-width="24"
+              stroke-dasharray="440" stroke-dashoffset="${440 - (440 * critical.length / Math.max(total,1))}" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#ff7722" stroke-width="24"
+              stroke-dasharray="440" stroke-dashoffset="${440 - (440 * high.length / Math.max(total,1))}" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#e6b800" stroke-width="24"
+              stroke-dasharray="440" stroke-dashoffset="${440 - (440 * medium.length / Math.max(total,1))}" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="#22cc66" stroke-width="24"
+              stroke-dasharray="440" stroke-dashoffset="${440 - (440 * low.length / Math.max(total,1))}" transform="rotate(-90 90 90)"/>
+            <text x="90" y="86" text-anchor="middle" fill="var(--text-primary)" font-size="22" font-weight="700">${total}</text>
+            <text x="90" y="106" text-anchor="middle" fill="var(--text-muted)" font-size="11">Active</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#ff4444"></span> Critical (${(critical.length/total*100).toFixed(1)}%) <span class="donut-legend-val">${critical.length}</span></div>
+            <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#ff7722"></span> High (${(high.length/total*100).toFixed(1)}%) <span class="donut-legend-val">${high.length}</span></div>
+            <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#e6b800"></span> Medium (${(medium.length/total*100).toFixed(1)}%) <span class="donut-legend-val">${medium.length}</span></div>
+            <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#22cc66"></span> Low (${(low.length/total*100).toFixed(1)}%) <span class="donut-legend-val">${low.length}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:16px">Team Breakdown</div>
+        <table>
+          <thead><tr><th>Team</th><th>Total</th><th>Critical</th><th>High</th><th>KEV</th><th>Δ MoM</th></tr></thead>
+          <tbody>
+            ${teamRows.map(t => `<tr>
+              <td>${t.name}</td><td class="mono">${t.total.toLocaleString()}</td>
+              <td style="color:var(--critical)">${t.critical}</td>
+              <td style="color:var(--high)">${t.high}</td>
+              <td style="color:${t.kev>0?'var(--danger)':'var(--text-muted)'}">${t.kev>0?'⚠ '+t.kev:'—'}</td>
+              <td style="color:${t.delta>0?'var(--danger)':'var(--success)'}">${t.delta>0?'↑':'↓'} ${Math.abs(t.delta)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:16px">KEV Exploited Vulnerabilities — CISA Catalog</div>
+      <table>
+        <thead><tr><th>CVE</th><th>Title</th><th>Assets</th><th>Severity</th><th>Ransomware</th><th>Due Date</th></tr></thead>
+        <tbody>
+          ${[...new Set(kev.map(f => f.cve))].map(cveId => {
+            const c = CVES[cveId];
+            const assets = [...new Set(kev.filter(f=>f.cve===cveId).map(f=>f.asset))];
+            return c ? `<tr class="clickable" onclick="viewCVE('${cveId}')">
+              <td class="mono text-link">${cveId}</td>
+              <td>${c.title}</td>
+              <td class="mono">${assets.length}</td>
+              <td><span class="badge badge-${c.severity.toLowerCase()}">${c.severity}</span></td>
+              <td>${c.ransomware?'<span style="color:var(--danger)">⚠ Yes</span>':'No'}</td>
+              <td style="font-size:12px;color:var(--text-muted)">${c.due||'—'}</td>
+            </tr>` : '';
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
 }
 
 // ===== RENDER TEAM DETAIL =====
