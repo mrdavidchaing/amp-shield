@@ -1253,21 +1253,21 @@ select.input { cursor: pointer; }
 // ===== DATA STORE =====
 const TEAMS = {
   'infra': { name:'Infrastructure', desc:'Core network, domain controllers, DNS, DHCP, firewalls', total:1204, critical:48, high:312, medium:526, low:318, unactioned:203, aged:89, deltaTotal:-18, deltaCrit:-3, deltaHigh:-7, deltaMed:-5, deltaLow:-3, deltaUnact:-12, deltaAged:-4, assets:67, tags:'env=production, function=infra', sites:'US-East, US-West, EU-Central', assets_list:[
-    {name:'DC-PROD-01',ip:'10.23.1.4',os:'Windows Server 2022',site:'US-East (nyc1)',cves:32,crit:5,high:11,seen:'2026-06-27'},
-    {name:'DC-PROD-02',ip:'10.23.1.5',os:'Windows Server 2022',site:'US-East (nyc1)',cves:28,crit:4,high:9,seen:'2026-06-28'},
-    {name:'DC-PROD-03',ip:'10.23.1.6',os:'Windows Server 2022',site:'US-East (nyc1)',cves:22,crit:3,high:8,seen:'2026-06-27'},
-    {name:'EXCH-PROD-01',ip:'10.23.2.12',os:'Windows Server 2022',site:'US-West (sfo1)',cves:19,crit:1,high:6,seen:'2026-06-26'},
-    {name:'EXCH-PROD-02',ip:'10.23.2.13',os:'Windows Server 2022',site:'US-West (sfo1)',cves:15,crit:1,high:4,seen:'2026-06-28'},
-    {name:'DNS-PROD-01',ip:'10.23.1.10',os:'RHEL 9.3',site:'US-East (nyc1)',cves:15,crit:2,high:5,seen:'2026-06-28'},
-    {name:'DNS-PROD-02',ip:'10.23.1.11',os:'RHEL 9.3',site:'US-East (nyc1)',cves:13,crit:1,high:4,seen:'2026-06-27'},
-    {name:'FW-PROD-01',ip:'10.23.0.1',os:'PAN-OS 11.1',site:'US-East (nyc1)',cves:12,crit:0,high:3,seen:'2026-06-27'},
-    {name:'FW-PROD-02',ip:'10.23.0.2',os:'PAN-OS 11.1',site:'EU-Central (fra1)',cves:10,crit:0,high:2,seen:'2026-06-28'},
-    {name:'NPS-PROD-01',ip:'10.23.1.20',os:'Windows Server 2022',site:'US-East (nyc1)',cves:18,crit:2,high:6,seen:'2026-06-26'},
+    {name:'DC-PROD-01',ip:'10.23.1.4',os:'Windows Server 2022',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'3',ou:'americas.amp.com/NYC/Infrastructure/Domain Controllers',cves:32,crit:5,high:11,seen:'2026-06-27'},
+    {name:'DC-PROD-02',ip:'10.23.1.5',os:'Windows Server 2022',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'3',ou:'americas.amp.com/NYC/Infrastructure/Domain Controllers',cves:28,crit:4,high:9,seen:'2026-06-28'},
+    {name:'DC-PROD-03',ip:'10.23.1.6',os:'Windows Server 2022',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC2',floor:'2',ou:'americas.amp.com/NYC/Infrastructure/Domain Controllers',cves:22,crit:3,high:8,seen:'2026-06-27'},
+    {name:'EXCH-PROD-01',ip:'10.23.2.12',os:'Windows Server 2022',site:'US-West (sfo1)',region:'Americas',city:'Santa Clara',bldg:'SFO1-Core',floor:'1',ou:'americas.amp.com/SCL/Infrastructure/Messaging',cves:19,crit:1,high:6,seen:'2026-06-26'},
+    {name:'EXCH-PROD-02',ip:'10.23.2.13',os:'Windows Server 2022',site:'US-West (sfo1)',region:'Americas',city:'Santa Clara',bldg:'SFO1-Core',floor:'1',ou:'americas.amp.com/SCL/Infrastructure/Messaging',cves:15,crit:1,high:4,seen:'2026-06-28'},
+    {name:'DNS-PROD-01',ip:'10.23.1.10',os:'RHEL 9.3',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'4',ou:'americas.amp.com/NYC/Infrastructure/Network Services',cves:15,crit:2,high:5,seen:'2026-06-28'},
+    {name:'DNS-PROD-02',ip:'10.23.1.11',os:'RHEL 9.3',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC2',floor:'4',ou:'americas.amp.com/NYC/Infrastructure/Network Services',cves:13,crit:1,high:4,seen:'2026-06-27'},
+    {name:'FW-PROD-01',ip:'10.23.0.1',os:'PAN-OS 11.1',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'1',ou:'americas.amp.com/NYC/Infrastructure/Network Edge',cves:12,crit:0,high:3,seen:'2026-06-27'},
+    {name:'FW-PROD-02',ip:'10.23.0.2',os:'PAN-OS 11.1',site:'EU-Central (fra1)',region:'EMEA',city:'Frankfurt',bldg:'FRA1-DC1',floor:'1',ou:'emea.amp.com/FRA/Infrastructure/Network Edge',cves:10,crit:0,high:2,seen:'2026-06-28'},
+    {name:'NPS-PROD-01',ip:'10.23.1.20',os:'Windows Server 2022',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'2',ou:'americas.amp.com/NYC/Infrastructure/Network Policy',cves:18,crit:2,high:6,seen:'2026-06-26'},
   ]},
   'platform': { name:'Platform Engineering', desc:'Kubernetes, container registry, CI/CD pipelines', total:892, critical:31, high:204, medium:380, low:277, unactioned:156, aged:62, deltaTotal:-7, deltaCrit:-2, deltaHigh:-4, deltaMed:-1, deltaLow:0, deltaUnact:-8, deltaAged:-3, assets:48, tags:'env=production, function=platform', sites:'US-East, EU-Central', assets_list:[
-    {name:'K8S-PROD-01',ip:'10.23.10.5',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:41,crit:4,high:12,seen:'2026-06-28'},
+    {name:'K8S-PROD-01',ip:'10.23.10.5',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'4',ou:'americas.amp.com/NYC/Platform/Kubernetes',cves:41,crit:4,high:12,seen:'2026-06-28'},
     {name:'K8S-PROD-02',ip:'10.23.10.6',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:38,crit:3,high:11,seen:'2026-06-27'},
-    {name:'K8S-PROD-03',ip:'10.23.10.7',os:'Ubuntu 22.04 LTS',site:'EU-Central (fra1)',cves:35,crit:3,high:10,seen:'2026-06-28'},
+    {name:'K8S-PROD-03',ip:'10.23.10.7',os:'Ubuntu 22.04 LTS',site:'EU-Central (fra1)',region:'EMEA',city:'Frankfurt',bldg:'FRA1-DC1',floor:'4',ou:'emea.amp.com/FRA/Platform/Kubernetes',cves:35,crit:3,high:10,seen:'2026-06-28'},
     {name:'REGISTRY-01',ip:'10.23.10.20',os:'RHEL 9.3',site:'EU-Central (fra1)',cves:22,crit:2,high:7,seen:'2026-06-28'},
     {name:'REGISTRY-02',ip:'10.23.10.21',os:'RHEL 9.3',site:'US-East (nyc1)',cves:19,crit:1,high:6,seen:'2026-06-27'},
     {name:'JENKINS-01',ip:'10.23.10.30',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:29,crit:3,high:8,seen:'2026-06-26'},
@@ -1283,9 +1283,9 @@ const TEAMS = {
     {name:'VA-SCANNER-01',ip:'10.23.20.25',os:'RHEL 9.3',site:'US-East (nyc1)',cves:8,crit:0,high:2,seen:'2026-06-28'},
   ]},
   'apps': { name:'Application Services', desc:'Web apps, APIs, middleware, messaging', total:541, critical:19, high:98, medium:242, low:182, unactioned:87, aged:38, deltaTotal:-3, deltaCrit:-1, deltaHigh:-2, deltaMed:0, deltaLow:0, deltaUnact:-4, deltaAged:-1, assets:41, tags:'function=apps, env=production', sites:'US-East, US-West', assets_list:[
-    {name:'WEB-PROD-03',ip:'10.23.4.17',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:47,crit:3,high:14,seen:'2026-06-28'},
+    {name:'WEB-PROD-03',ip:'10.23.4.17',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'5',ou:'americas.amp.com/NYC/Apps/Web',cves:47,crit:3,high:14,seen:'2026-06-28'},
     {name:'WEB-PROD-05',ip:'10.23.4.19',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:38,crit:2,high:11,seen:'2026-06-27'},
-    {name:'WEB-PROD-07',ip:'10.23.4.21',os:'Ubuntu 22.04 LTS',site:'US-West (sfo1)',cves:35,crit:2,high:10,seen:'2026-06-28'},
+    {name:'WEB-PROD-07',ip:'10.23.4.21',os:'Ubuntu 22.04 LTS',site:'US-West (sfo1)',region:'Americas',city:'Santa Clara',bldg:'SFO1-Core',floor:'2',ou:'americas.amp.com/SCL/Apps/Web',cves:35,crit:2,high:10,seen:'2026-06-28'},
     {name:'APP-PROD-02',ip:'10.23.5.84',os:'Windows Server 2022',site:'US-East (nyc1)',cves:29,crit:3,high:8,seen:'2026-06-27'},
     {name:'APP-PROD-05',ip:'10.23.5.87',os:'RHEL 9.3',site:'US-East (nyc1)',cves:26,crit:2,high:7,seen:'2026-06-28'},
     {name:'APP-PROD-07',ip:'10.23.5.88',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:41,crit:4,high:12,seen:'2026-06-28'},
@@ -1293,8 +1293,8 @@ const TEAMS = {
     {name:'MSG-BROKER-01',ip:'10.23.4.60',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:19,crit:1,high:5,seen:'2026-06-28'},
   ]},
   'db': { name:'Database & Storage', desc:'RDBMS, NoSQL, SAN/NAS, backup infrastructure', total:387, critical:15, high:89, medium:178, low:105, unactioned:52, aged:28, deltaTotal:-22, deltaCrit:-4, deltaHigh:-6, deltaMed:-8, deltaLow:-4, deltaUnact:-7, deltaAged:-3, assets:22, tags:'function=db, env=production', sites:'US-East, EU-Central', assets_list:[
-    {name:'DB-PROD-01',ip:'10.23.8.50',os:'RHEL 9.3',site:'US-East (nyc1)',cves:24,crit:2,high:7,seen:'2026-06-27'},
-    {name:'DB-PROD-02',ip:'10.23.8.55',os:'RHEL 9.3',site:'EU-Central (fra1)',cves:28,crit:2,high:8,seen:'2026-06-28'},
+    {name:'DB-PROD-01',ip:'10.23.8.50',os:'RHEL 9.3',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'3',ou:'americas.amp.com/NYC/Databases/PostgreSQL',cves:24,crit:2,high:7,seen:'2026-06-27'},
+    {name:'DB-PROD-02',ip:'10.23.8.55',os:'RHEL 9.3',site:'EU-Central (fra1)',region:'EMEA',city:'Frankfurt',bldg:'FRA1-DC1',floor:'3',ou:'emea.amp.com/FRA/Databases/PostgreSQL',cves:28,crit:2,high:8,seen:'2026-06-28'},
     {name:'DB-PROD-03',ip:'10.23.8.56',os:'RHEL 9.3',site:'EU-Central (fra1)',cves:21,crit:1,high:6,seen:'2026-06-28'},
     {name:'MONGO-PROD-01',ip:'10.23.8.70',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:18,crit:1,high:5,seen:'2026-06-27'},
     {name:'SAN-CTRL-01',ip:'10.23.8.100',os:'Dell EMC Unity OE 5.3',site:'US-East (nyc1)',cves:7,crit:0,high:2,seen:'2026-06-26'},
@@ -1310,10 +1310,10 @@ const TEAMS = {
     {name:'FSLOGIX-01',ip:'10.23.30.40',os:'Windows Server 2022',site:'US-West (sfo1)',cves:9,crit:0,high:2,seen:'2026-06-28'},
   ]},
   'endpoint': { name:'Endpoint Engineering', desc:'Jamf Pro, macOS fleet, endpoint compliance, Zero Trust', total:218, critical:8, high:47, medium:102, low:61, unactioned:34, aged:18, deltaTotal:5, deltaCrit:2, deltaHigh:3, deltaMed:0, deltaLow:0, deltaUnact:4, deltaAged:2, assets:320, tags:'function=endpoint, env=production', sites:'All', assets_list:[
-    {name:'JAMF-PROD-01',ip:'10.23.35.5',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',cves:16,crit:0,high:4,seen:'2026-06-28'},
-    {name:'MAC-ENG-14',ip:'10.23.35.114',os:'macOS Sequoia 15.3',site:'US-East (nyc1)',cves:8,crit:2,high:3,seen:'2026-06-28'},
-    {name:'MAC-DESIGN-03',ip:'10.23.35.73',os:'macOS Sequoia 15.2.1',site:'US-West (sfo1)',cves:7,crit:1,high:3,seen:'2026-06-27'},
-    {name:'MAC-FIN-07',ip:'10.23.35.207',os:'macOS Sequoia 15.3',site:'US-East (nyc1)',cves:6,crit:0,high:3,seen:'2026-06-28'},
+    {name:'JAMF-PROD-01',ip:'10.23.35.5',os:'Ubuntu 22.04 LTS',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'4',ou:'americas.amp.com/NYC/Endpoint/MDM',cves:16,crit:0,high:4,seen:'2026-06-28'},
+    {name:'MAC-ENG-14',ip:'10.23.35.114',os:'macOS Sequoia 15.3',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'5',ou:'americas.amp.com/NYC/Endpoint/Engineering',cves:8,crit:2,high:3,seen:'2026-06-28'},
+    {name:'MAC-DESIGN-03',ip:'10.23.35.73',os:'macOS Sequoia 15.2.1',site:'US-West (sfo1)',region:'Americas',city:'Santa Clara',bldg:'SFO1-Core',floor:'3',ou:'americas.amp.com/SCL/Endpoint/Design',cves:7,crit:1,high:3,seen:'2026-06-27'},
+    {name:'MAC-FIN-07',ip:'10.23.35.207',os:'macOS Sequoia 15.3',site:'US-East (nyc1)',region:'Americas',city:'New York',bldg:'NYC1-DC1',floor:'7',ou:'americas.amp.com/NYC/Endpoint/Finance',cves:6,crit:0,high:3,seen:'2026-06-28'},
     {name:'MAC-HR-02',ip:'10.23.35.42',os:'macOS Sonoma 14.7',site:'US-East (nyc1)',cves:5,crit:0,high:1,seen:'2026-06-26'},
     {name:'MAC-LEGAL-01',ip:'10.23.35.151',os:'macOS Sequoia 15.3',site:'EU-Central (fra1)',cves:4,crit:0,high:2,seen:'2026-06-28'},
     {name:'MAC-EXEC-01',ip:'10.23.35.10',os:'macOS Sequoia 15.4',site:'US-East (nyc1)',cves:3,crit:0,high:1,seen:'2026-06-28'},
@@ -2093,6 +2093,14 @@ function renderAssetDetail() {
             <span style="font-size:12px;color:var(--text-muted)">|</span>
             <span style="font-size:12px;color:var(--text-secondary)">Team: ${teamName}</span>
           </div>
+          ${assetData.region ? `
+          <div style="margin-top:10px;padding:10px 14px;background:var(--bg-elevated);border-radius:var(--radius-sm);display:flex;gap:20px;flex-wrap:wrap;font-size:12px">
+            <div><span style="color:var(--text-muted)">Region:</span> <strong>${assetData.region}</strong></div>
+            <div><span style="color:var(--text-muted)">City:</span> <strong>${assetData.city}</strong></div>
+            <div><span style="color:var(--text-muted)">Building:</span> <strong>${assetData.bldg}</strong></div>
+            <div><span style="color:var(--text-muted)">Floor:</span> <strong>${assetData.floor}</strong></div>
+            <div style="flex-basis:100%"><span style="color:var(--text-muted)">AD OU:</span> <code class="mono" style="font-size:11px;background:var(--bg-hover);padding:2px 6px;border-radius:3px">${assetData.ou}</code></div>
+          </div>` : ''}
         </div>
       </div>
     </div>
