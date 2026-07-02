@@ -716,6 +716,12 @@ select.input { cursor: pointer; }
             Showing 5 of 3,847 findings — counts frozen between imports
           </div>
         </div>
+
+        <!-- Disposition summary -->
+        <div class="card" id="dispSummary" style="margin-top:4px">
+          <div class="card-title" style="margin-bottom:12px">Disposition Breakdown — Active Findings</div>
+          <div id="dispSummaryContent" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
       </div>
 
       <!-- ========== EXECUTIVE ========== -->
@@ -1411,15 +1417,42 @@ const DISPOSITIONS = {
 FINDINGS.forEach(f => {
   if (f.state === 'Fixed') f.disposition = 'Mitigation Applied';
   else if (f.state === 'Actioned') f.disposition = 'Ticket Created';
+  // Varied active dispositions
   else if (f.asset === 'DC-PROD-01' && f.cve === 'CVE-2026-08912') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'DC-PROD-01' && f.cve === 'CVE-2026-11223') f.disposition = 'Ticket Created';
+  else if (f.asset === 'DC-PROD-02' && f.cve === 'CVE-2026-08912') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'DC-PROD-03' && f.cve === 'CVE-2026-08912') f.disposition = 'Risk Accepted';
   else if (f.asset === 'DB-PROD-02' && f.cve === 'CVE-2026-04567') f.disposition = 'Deferred';
+  else if (f.asset === 'DB-PROD-01' && f.cve === 'CVE-2026-09876') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'DB-PROD-01' && f.cve === 'CVE-2026-31200') f.disposition = 'Ticket Created';
+  else if (f.asset === 'DB-PROD-02' && f.cve === 'CVE-2026-31200') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'DB-PROD-03' && f.cve === 'CVE-2026-31200') f.disposition = 'Deferred';
   else if (f.asset === 'APP-PROD-07' && f.cve === 'CVE-2026-09876') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'APP-PROD-02' && f.cve === 'CVE-2026-08812') f.disposition = 'Ticket Created';
+  else if (f.asset === 'WEB-PROD-07' && f.cve === 'CVE-2026-08812') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'APP-PROD-07' && f.cve === 'CVE-2026-34001') f.disposition = 'Deferred';
   else if (f.asset === 'MAC-DESIGN-03' && f.cve === 'CVE-2026-41001') f.disposition = 'OS Exception';
+  else if (f.asset === 'MAC-HR-02' && f.cve === 'CVE-2026-41001') f.disposition = 'OS Exception';
+  else if (f.asset === 'MAC-ENG-14' && f.cve === 'CVE-2026-41001') f.disposition = 'Ticket Created';
+  else if (f.asset === 'MAC-FIN-07' && f.cve === 'CVE-2026-41001') f.disposition = 'Deferred';
+  else if (f.asset === 'MAC-FIN-07' && f.cve === 'CVE-2026-45005') f.disposition = 'Ticket Created';
   else if (f.asset === 'WEB-PROD-05' && f.cve === 'CVE-2026-22334') f.disposition = 'False Positive';
+  else if (f.asset === 'MSG-BROKER-01' && f.cve === 'CVE-2026-22334') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'WEB-PROD-03' && f.cve === 'CVE-2026-37002') f.disposition = 'Risk Accepted';
+  else if (f.asset === 'API-GW-01' && f.cve === 'CVE-2026-37002') f.disposition = 'Deferred';
   else if (f.asset === 'CSW-DIST-01') f.disposition = 'Risk Accepted';
-  else if (f.asset === 'PRINT-SRV-01' && f.cve === 'CVE-2026-11223') f.disposition = 'Ticket Created';
+  else if (f.asset === 'VCENTER-01') f.disposition = 'Ticket Created';
+  else if (f.asset === 'PRINT-SRV-01') f.disposition = 'Ticket Created';
   else if (f.asset === 'K8S-PROD-02' && f.cve === 'CVE-2026-04567') f.disposition = 'Deferred';
+  else if (f.asset === 'K8S-PROD-01' && f.cve === 'CVE-2026-12345') f.disposition = 'Ticket Created';
+  else if (f.asset === 'K8S-PROD-03' && f.cve === 'CVE-2026-14567') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'SIEM-PROD-01' && f.cve === 'CVE-2026-04567') f.disposition = 'Risk Accepted';
   else if (f.asset === 'SAN-CTRL-01') f.disposition = 'OS Exception';
+  else if (f.asset === 'BKUP-SRV-01' && f.cve === 'CVE-2026-08912') f.disposition = 'Deferred';
+  else if (f.asset === 'NPS-PROD-01' && f.cve === 'CVE-2026-11223') f.disposition = 'Mitigation Applied';
+  else if (f.asset === 'JENKINS-01' && f.cve === 'CVE-2026-12345') f.disposition = 'Risk Accepted';
+  else if (f.cve === 'CVE-2026-12345') f.disposition = 'Open';
+  else if (f.cve === 'CVE-2026-11223') f.disposition = 'Ticket Created';
   else f.disposition = 'Open';
 });
 
@@ -1860,6 +1893,20 @@ function updateDashboardStats() {
     legendVals[1].textContent = high.length;
     legendVals[2].textContent = medium.length;
     legendVals[3].textContent = low.length;
+  }
+
+  // Update disposition summary
+  const dispContent = document.getElementById('dispSummaryContent');
+  if (dispContent) {
+    const counts = {};
+    active.forEach(f => { counts[f.disposition] = (counts[f.disposition] || 0) + 1; });
+    dispContent.innerHTML = Object.entries(DISPOSITIONS).map(([name, d]) => {
+      const count = counts[name] || 0;
+      return `<div style="flex:1;min-width:120px;background:var(--bg-elevated);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;border-left:3px solid ${d.color}">
+        <div style="font-size:20px;font-weight:700;color:${d.color}">${count}</div>
+        <div style="font-size:11px;color:var(--text-secondary)">${d.label}</div>
+      </div>`;
+    }).join('');
   }
 }
 
