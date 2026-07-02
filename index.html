@@ -1500,6 +1500,57 @@ function filterCVEDisposition(val) {
   });
 }
 
+// ===== CHANGE DISPOSITION =====
+function changeDisposition(cve, asset, newDisp) {
+  const f = FINDINGS.find(x => x.cve === cve && x.asset === asset);
+  if (f) f.disposition = newDisp;
+  closeDispDropdown();
+  // Re-render current view
+  const activePage = document.querySelector('.page.active');
+  if (activePage) {
+    const pageId = activePage.id;
+    if (pageId === 'page-cve-detail') {
+      const cveId = document.querySelector('#page-cve-detail .mono')?.textContent?.trim();
+      if (cveId) renderCVEDetail(cveId);
+    } else if (pageId === 'page-asset-detail') {
+      renderAssetDetail();
+    }
+  }
+}
+
+function toggleDispDropdown(el, cve, asset) {
+  closeDispDropdown();
+  const existing = document.getElementById('dispDropdown');
+  if (existing && existing.dataset.cve === cve && existing.dataset.asset === asset) return;
+
+  const dropdown = document.createElement('div');
+  dropdown.id = 'dispDropdown';
+  dropdown.dataset.cve = cve;
+  dropdown.dataset.asset = asset;
+  dropdown.style.cssText = 'position:absolute;z-index:100;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:4px;min-width:160px;box-shadow:var(--shadow)';
+  const rect = el.getBoundingClientRect();
+  dropdown.style.top = (rect.bottom + 4) + 'px';
+  dropdown.style.left = rect.left + 'px';
+
+  Object.entries(DISPOSITIONS).forEach(([name, d]) => {
+    const item = document.createElement('div');
+    item.textContent = d.label;
+    item.style.cssText = `padding:6px 10px;cursor:pointer;border-radius:4px;font-size:12px;color:${d.color}`;
+    item.onmouseenter = () => item.style.background = 'var(--bg-hover)';
+    item.onmouseleave = () => item.style.background = '';
+    item.onclick = (e) => { e.stopPropagation(); changeDisposition(cve, asset, name); };
+    dropdown.appendChild(item);
+  });
+
+  document.body.appendChild(dropdown);
+  setTimeout(() => document.addEventListener('click', closeDispDropdown, {once: true}), 10);
+}
+
+function closeDispDropdown() {
+  const d = document.getElementById('dispDropdown');
+  if (d) d.remove();
+}
+
 // ===== RENDER EXECUTIVE PAGE =====
 function renderExecutivePage() {
   const active = FINDINGS.filter(f => f.state === 'Active');
@@ -1742,7 +1793,7 @@ function renderCVEDetail(cveId) {
       <table><thead><tr><th>Asset</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>Disposition</th><th>First Seen</th><th>Last Observed</th></tr></thead>
       <tbody id="cveActiveBody">${FINDINGS.filter(f=>f.cve===cveId&&f.state==='Active').map(f=>{
         const d = DISPOSITIONS[f.disposition] || DISPOSITIONS['Open'];
-        return `<tr data-disposition="${f.disposition}"><td class="mono text-link" style="cursor:pointer" onclick="viewAsset('${f.asset}')">${f.asset}</td><td>${f.check}</td><td class="mono">${f.port}</td><td><span class="badge badge-${f.severity.toLowerCase()}">${f.severity}</span></td><td><span class="badge" style="background:${d.color}20;color:${d.color};border:1px solid ${d.color}40">${d.label}</span></td><td style="font-size:12px;color:var(--text-muted)">${f.firstSeen}</td><td style="font-size:12px;color:var(--text-muted)">2026-06-28</td></tr>`;
+        return `<tr data-disposition="${f.disposition}"><td class="mono text-link" style="cursor:pointer" onclick="viewAsset('${f.asset}')">${f.asset}</td><td>${f.check}</td><td class="mono">${f.port}</td><td><span class="badge badge-${f.severity.toLowerCase()}">${f.severity}</span></td><td><span class="badge" style="cursor:pointer;background:${d.color}20;color:${d.color};border:1px solid ${d.color}40" onclick="event.stopPropagation();toggleDispDropdown(this,'${f.cve}','${f.asset}')">${d.label} ▾</span></td><td style="font-size:12px;color:var(--text-muted)">${f.firstSeen}</td><td style="font-size:12px;color:var(--text-muted)">2026-06-28</td></tr>`;
       }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:24px">No active findings</td></tr>'}</tbody></table>
     </div>
     <div id="tab-cve-actioned" class="card" style="display:none">
@@ -1964,18 +2015,21 @@ function renderAssetDetail() {
     </div>
     <div class="card">
       <div class="card-header"><span class="card-title">Findings on ${assetData.name}</span></div>
-      <table><thead><tr><th>CVE</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>State</th><th>KEV</th><th>First Seen</th><th>★</th></tr></thead>
-      <tbody>${findings.map(f => `
+      <table><thead><tr><th>CVE</th><th>Check / Plugin</th><th>Port</th><th>Severity</th><th>State</th><th>Disposition</th><th>KEV</th><th>First Seen</th><th>★</th></tr></thead>
+      <tbody>${findings.map(f => {
+        const d = DISPOSITIONS[f.disposition] || DISPOSITIONS['Open'];
+        return `
         <tr class="clickable" onclick="viewCVE('${f.cve}')">
           <td class="mono text-link">${f.cve}</td>
           <td>${f.check}</td>
           <td class="mono">${f.port}</td>
           <td><span class="badge badge-${f.severity.toLowerCase()}">${f.severity}</span></td>
           <td><span class="badge badge-neutral">${f.state}</span></td>
+          <td><span class="badge" style="cursor:pointer;background:${d.color}20;color:${d.color};border:1px solid ${d.color}40" onclick="event.stopPropagation();toggleDispDropdown(this,'${f.cve}','${f.asset}')">${d.label} ▾</span></td>
           <td>${f.kev?'<span style="color:var(--danger)">⚠</span>':''}</td>
           <td style="font-size:12px;color:var(--text-muted)">${f.firstSeen}</td>
           <td onclick="event.stopPropagation();toggleWatchStar(this)" style="cursor:pointer">${watchState[f.cve]?'★':'☆'}</td>
-        </tr>`).join('')}</tbody></table>
+        </tr>`}).join('')}</tbody></table>
       ${findings.length === 0 ? '<div style="padding:24px;text-align:center;color:var(--text-muted)">No findings for this asset.</div>' : ''}
     </div>`;
 }
