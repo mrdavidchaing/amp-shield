@@ -1043,46 +1043,7 @@ select.input { cursor: pointer; }
       <div class="page" id="page-recently-fixed"></div>
 
       <!-- ========== VENDOR / FAMILY ========== -->
-      <div class="page" id="page-vendor">
-        <div class="card">
-          <div class="card-title" style="margin-bottom:16px">Product Families</div>
-          <div class="family-row" onclick="showToast('Would drill into: Microsoft > Check-level view')">
-            <span class="family-name">Microsoft</span>
-            <span class="family-count">1,204 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:70%;background:var(--accent)"></div></div>
-          </div>
-          <div class="family-row" onclick="showToast('Would drill into: Linux Kernel > Check-level view')">
-            <span class="family-name">Linux Kernel</span>
-            <span class="family-count">562 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:33%;background:var(--critical)"></div></div>
-          </div>
-          <div class="family-row" onclick="showToast('Would drill into: Apache > Check-level view')">
-            <span class="family-name">Apache (HTTPd, Tomcat, Log4j)</span>
-            <span class="family-count">412 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:24%;background:var(--high)"></div></div>
-          </div>
-          <div class="family-row" onclick="showToast('Would drill into: OpenSSL > Check-level view')">
-            <span class="family-name">OpenSSL</span>
-            <span class="family-count">389 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:23%;background:var(--medium)"></div></div>
-          </div>
-          <div class="family-row" onclick="showToast('Would drill into: Ubuntu > Check-level view')">
-            <span class="family-name">Ubuntu</span>
-            <span class="family-count">311 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:18%;background:var(--medium)"></div></div>
-          </div>
-          <div class="family-row" onclick="showToast('Would drill into: VMware > Check-level view')">
-            <span class="family-name">VMware (ESXi, vCenter)</span>
-            <span class="family-count">278 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:16%;background:var(--high)"></div></div>
-          </div>
-          <div class="family-row" style="color:var(--text-muted)">
-            <span class="family-name">Other (4 more)</span>
-            <span class="family-count">691 findings</span>
-            <div class="family-bar"><div class="family-bar-fill" style="width:40%;background:var(--text-muted)"></div></div>
-          </div>
-        </div>
-      </div>
+      <div class="page" id="page-vendor"></div>
 
       <!-- ========== SETUP & IMPORTS ========== -->
       <div class="page" id="page-setup">
@@ -1503,6 +1464,7 @@ function navigateTo(page) {
   if (page === 'cve-detail') renderCVEDetail();
   if (page === 'asset-detail') renderAssetDetail();
   if (page === 'assets') renderAssetsPage();
+  if (page === 'vendor') renderVendorPage();
   if (page === 'recently-fixed') renderRecentlyFixed();
   if (page === 'dashboard') {
     renderFindingsTable();
@@ -2220,6 +2182,109 @@ function filterGlobalAssets(query) {
     row.style.display = matchSearch && matchSite && matchOS && matchDisp ? '' : 'none';
   });
 }
+// ===== RENDER VENDOR PAGE — Drill-down donut =====
+let vendorLevel = 0, vendorFamily = '', vendorPlugin = '';
+const FAMILY_COLORS = ['#ff4444','#ff7722','#e6b800','#0066ff','#22cc66','#00aacc','#8899bb','#556888'];
+
+function renderVendorPage(family, plugin) {
+  const page = document.getElementById('page-vendor');
+  const active = FINDINGS.filter(f => f.state === 'Active');
+
+  // Categorize findings into families
+  function getFamily(check) {
+    const c = check.toLowerCase();
+    if (c.includes('windows') || c.includes('exchange') || c.includes('kerberos') || c.includes('smb')) return 'Microsoft';
+    if (c.includes('log4j') || c.includes('tomcat') || c.includes('apache')) return 'Apache';
+    if (c.includes('openssl') || c.includes('tls cert')) return 'OpenSSL';
+    if (c.includes('linux kernel') || c.includes('netfilter')) return 'Linux Kernel';
+    if (c.includes('postgresql')) return 'PostgreSQL';
+    if (c.includes('nginx') || c.includes('quic')) return 'nginx';
+    if (c.includes('node')) return 'Node.js';
+    if (c.includes('vmware') || c.includes('vcenter')) return 'VMware';
+    if (c.includes('cisco') || c.includes('ios xe')) return 'Cisco';
+    if (c.includes('safari') || c.includes('webkit') || c.includes('macos') || c.includes('gatekeeper') || c.includes('xprotect') || c.includes('iokit') || c.includes('365') || c.includes('ms365') || c.includes('office for mac') || c.includes('jamf')) return 'Apple Ecosystem';
+    return 'Other';
+  }
+
+  const total = active.length;
+  const families = {};
+  active.forEach(f => {
+    const fam = family || getFamily(f.check);
+    const plug = plugin || (family ? f.check : '');
+    const key = family ? (plugin ? f.cve : plug) : fam;
+    if (!families[key]) families[key] = {count:0, assets:new Set(), kev:false, crit:0};
+    families[key].count++;
+    families[key].assets.add(f.asset);
+    if (f.kev) families[key].kev = true;
+    if (f.severity === 'Critical') families[key].crit++;
+  });
+
+  const entries = Object.entries(families).sort((a,b) => b[1].count - a[1].count);
+  const topEntries = entries.slice(0, 7);
+  const otherCount = entries.slice(7).reduce((s,e) => s + e[1].count, 0);
+
+  // Donut SVG
+  const cx=90, cy=90, r=65, circ=2*Math.PI*r;
+  let cumulative = 0;
+  const slices = [...topEntries, ...(otherCount > 0 ? [['Other', {count:otherCount, assets:new Set(), kev:false, crit:0}]] : [])];
+  const totalSlices = slices.reduce((s,e) => s + e[1].count, 0);
+
+  let svgSlices = '';
+  slices.forEach(([name, data], i) => {
+    const pct = data.count / totalSlices;
+    const len = pct * circ;
+    svgSlices += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${FAMILY_COLORS[i % FAMILY_COLORS.length]}" stroke-width="22"
+      stroke-dasharray="${circ}" stroke-dashoffset="${circ - cumulative}" transform="rotate(-90 ${cx} ${cy})"
+      style="cursor:pointer;transition:opacity 0.15s" onmouseenter="this.style.opacity='0.8'" onmouseleave="this.style.opacity='1'"
+      onclick="${family && plugin ? `viewCVE('${name}')` : family ? `renderVendorPage('${family}','${name.replace(/'/g,"\\'")}')` : `renderVendorPage('${name.replace(/'/g,"\\'")}')`}"/>`;
+    cumulative += len;
+  });
+
+  const title = family ? (plugin ? `${plugin} → CVEs` : `${family} → Checks`) : 'Product Families';
+  const backBtn = family ? `<button class="btn btn-sm btn-ghost" onclick="${plugin ? `renderVendorPage('${family}')` : `renderVendorPage()`}">← Back</button>` : '';
+
+  page.innerHTML = `
+    <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
+      ${backBtn}
+      <span style="font-size:18px;font-weight:700">${title}</span>
+      <span style="font-size:12px;color:var(--text-muted)">${totalSlices} findings</span>
+    </div>
+    <div class="cols">
+      <div class="card" style="display:flex;align-items:center;justify-content:center">
+        <div class="donut-wrap">
+          <svg width="200" height="200" viewBox="0 0 180 180">
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-hover)" stroke-width="22"/>
+            ${svgSlices}
+            <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--text-primary)" font-size="20" font-weight="700">${totalSlices}</text>
+            <text x="${cx}" y="${cy+14}" text-anchor="middle" fill="var(--text-muted)" font-size="10">findings</text>
+          </svg>
+          <div class="donut-legend">
+            ${slices.map(([name, data], i) => `
+              <div class="donut-legend-item" style="cursor:pointer" onclick="${family && plugin ? `viewCVE('${name}')` : family ? `renderVendorPage('${family}','${name.replace(/'/g,"\\'")}')` : `renderVendorPage('${name.replace(/'/g,"\\'")}')`}">
+                <span class="donut-legend-dot" style="background:${FAMILY_COLORS[i % FAMILY_COLORS.length]}"></span>
+                ${name} <span class="donut-legend-val">${data.count}</span>
+                ${data.kev ? '<span style="color:var(--danger);font-size:11px">⚠</span>' : ''}
+              </div>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>${family ? (plugin ? 'CVE' : 'Check / Plugin') : 'Family'}</th><th>Findings</th><th>Assets</th><th>Critical</th><th>KEV</th></tr></thead>
+        <tbody>
+          ${entries.map(([name, data]) => `
+            <tr class="clickable" onclick="${family && plugin ? `viewCVE('${name}')` : family ? `renderVendorPage('${family}','${name.replace(/'/g,"\\'")}')` : `renderVendorPage('${name.replace(/'/g,"\\'")}')`}">
+              <td>${family && plugin ? `<span class="mono text-link">${name}</span>` : name}</td>
+              <td class="mono">${data.count}</td>
+              <td class="mono">${data.assets.size}</td>
+              <td style="color:var(--critical)">${data.crit || '—'}</td>
+              <td>${data.kev ? '<span style="color:var(--danger)">⚠</span>' : '—'}</td>
+            </tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>
+  `;
+}
+
 // ===== RENDER RECENTLY FIXED =====
 function renderRecentlyFixed() {
   const fixed = FINDINGS.filter(f => f.state === 'Fixed');
