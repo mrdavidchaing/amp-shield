@@ -410,6 +410,12 @@ select.input { cursor: pointer; }
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+/* Donut chart animations — segments draw in staggered */
+@keyframes donutCrit { to { stroke-dashoffset: 323; } }
+@keyframes donutHigh { to { stroke-dashoffset: 232; } }
+@keyframes donutMed  { to { stroke-dashoffset: 71; } }
+@keyframes donutLow  { to { stroke-dashoffset: -48; } }
+
 /* ===== RESPONSIVE — Mobile & Tablet ===== */
 @media (max-width: 900px) {
   .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 50; transform: translateX(-100%); transition: transform 0.25s; }
@@ -578,9 +584,19 @@ select.input { cursor: pointer; }
               <svg width="160" height="160" viewBox="0 0 160 160">
                 <circle cx="80" cy="80" r="60" fill="none" stroke="var(--bg-hover)" stroke-width="20"/>
                 <circle cx="80" cy="80" r="60" fill="none" stroke="#ef4444" stroke-width="20"
-                  stroke-dasharray="377" stroke-dashoffset="0" transform="rotate(-90 80 80)"
-                  stroke-dasharray="377" stroke-dashoffset="337"
-                  style="transition: stroke-dashoffset 0.5s"/>
+                  stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 80 80)"
+                  style="animation: donutCrit 0.8s 0.1s ease-out forwards"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#f97316" stroke-width="20"
+                  stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 80 80)"
+                  style="animation: donutHigh 0.8s 0.3s ease-out forwards"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#eab308" stroke-width="20"
+                  stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 80 80)"
+                  style="animation: donutMed 0.8s 0.5s ease-out forwards"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#22c55e" stroke-width="20"
+                  stroke-dasharray="377" stroke-dashoffset="377" transform="rotate(-90 80 80)"
+                  style="animation: donutLow 0.8s 0.7s ease-out forwards"/>
+                <text x="80" y="84" text-anchor="middle" fill="var(--text-primary)" font-size="18" font-weight="700" id="donutTotal">—</text>
+                <text x="80" y="102" text-anchor="middle" fill="var(--text-muted)" font-size="10">Total Active</text>
               </svg>
               <div class="donut-legend">
                 <div class="donut-legend-item"><span class="donut-legend-dot" style="background:#ef4444"></span> Critical <span class="donut-legend-val">142</span></div>
@@ -1703,6 +1719,19 @@ function updateDashboardStats() {
     subs[1].textContent = `${kev.filter(f=>f.severity==='Critical').length} exploited (KEV)`;
     subs[2].textContent = `${kev.filter(f=>f.severity==='High').length} exploited (KEV)`;
   }
+
+  // Update donut center total
+  const donutTotal = document.getElementById('donutTotal');
+  if (donutTotal) donutTotal.textContent = active.length;
+
+  // Update donut legend values
+  const legendVals = document.querySelectorAll('.donut-legend-val');
+  if (legendVals.length >= 4) {
+    legendVals[0].textContent = critical.length;
+    legendVals[1].textContent = high.length;
+    legendVals[2].textContent = medium.length;
+    legendVals[3].textContent = low.length;
+  }
 }
 
 // ===== RENDER FINDINGS TABLE =====
@@ -2082,6 +2111,29 @@ document.querySelectorAll('#page-setup .btn').forEach(btn => {
     btn.onclick = () => showToast('File upload would open in production');
   }
 });
+
+// ===== CSV EXPORT =====
+function exportCSV() {
+  const active = FINDINGS.filter(f => f.state === 'Active');
+  const headers = ['CVE','Check/Plugin','Asset','Port','Severity','State','KEV','First Seen'];
+  const rows = active.map(f => [f.cve, `"${f.check}"`, f.asset, f.port, f.severity, f.state, f.kev?'Yes':'No', f.firstSeen]);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `ampshield-findings-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`✓ Exported ${rows.length} active findings to CSV`);
+}
+
+// Replace old export buttons
+function hookExportButtons() {
+  document.querySelectorAll('.btn').forEach(btn => {
+    if (btn.textContent.includes('Export CSV')) btn.onclick = exportCSV;
+  });
+}
+setTimeout(hookExportButtons, 200);
 
 // ===== INIT =====
 updateDashboardStats();
