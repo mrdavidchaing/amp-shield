@@ -1737,6 +1737,23 @@ function renderTeamDetail() {
         <div class="kpi-item"><div class="kpi-value" style="color:var(--warning)">${t.aged}</div><div class="kpi-label">Aged > 90d</div><div class="kpi-delta">${delta(t.deltaAged)} vs last month</div></div>
         <div class="kpi-item"><div class="kpi-value" style="color:var(--danger)">${(()=>{const k=FINDINGS.filter(f=>f.kev&&f.state==='Active'&&t.assets_list.some(a=>a.name===f.asset));return k.length;})()}</div><div class="kpi-label">KEV Exploited</div><div class="kpi-delta"></div></div>
       </div>
+
+      <!-- Team disposition bar -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        ${(() => {
+          const teamFindings = FINDINGS.filter(f => f.state === 'Active' && t.assets_list.some(a => a.name === f.asset));
+          const counts = {};
+          teamFindings.forEach(f => { counts[f.disposition] = (counts[f.disposition] || 0) + 1; });
+          return Object.entries(DISPOSITIONS).map(([name, d]) => {
+            const count = counts[name] || 0;
+            return `<div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text-secondary);background:var(--bg-elevated);border-radius:var(--radius-sm);padding:4px 10px">
+              <div style="width:6px;height:6px;border-radius:50%;background:${d.color};flex-shrink:0"></div>
+              <span>${d.label}</span>
+              <strong style="color:${d.color}">${count}</strong>
+            </div>`;
+          }).join('');
+        })()}
+      </div>
     </div>
     <div class="tabs" id="teamDetailTabs">
       <button class="tab active" onclick="switchTab(this,'team-assets')">Assets</button>
