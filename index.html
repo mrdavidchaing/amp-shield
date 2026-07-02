@@ -572,9 +572,9 @@ select.input { cursor: pointer; }
             <div class="stat-sub">No triage status set</div>
           </div>
           <div class="stat-card" style="border-left:3px solid var(--info)" onclick="dashFilter('state','KEV')">
-            <div class="stat-value" style="color:var(--info)">86</div>
-            <div class="stat-label">Watched CVEs</div>
-            <div class="stat-sub">Under active monitoring</div>
+            <div class="stat-value" style="color:var(--info)">—</div>
+            <div class="stat-label">KEV Exploited</div>
+            <div class="stat-sub">CISA Known Exploited</div>
           </div>
         </div>
 
@@ -1703,7 +1703,7 @@ function updateDashboardStats() {
   const distinct = [...new Set(active.map(f => f.cve))];
   const aged = active.filter(f => f.firstSeen < '2026-03-28');
   const unactioned = active.length;
-  const watched = Object.keys(watchState).filter(c => watchState[c]).length;
+  const kevCount = kev.length;
 
   const cards = document.querySelectorAll('#page-dashboard .stat-card .stat-value');
   if (cards.length >= 8) {
@@ -1714,13 +1714,14 @@ function updateDashboardStats() {
     cards[4].textContent = low.length;
     cards[5].textContent = aged.length;
     cards[6].textContent = unactioned;
-    cards[7].textContent = watched;
+    cards[7].textContent = kevCount;
   }
   const subs = document.querySelectorAll('#page-dashboard .stat-card .stat-sub');
   if (subs.length >= 8) {
     subs[0].textContent = `${distinct.length} distinct CVEs`;
     subs[1].textContent = `${kev.filter(f=>f.severity==='Critical').length} exploited (KEV)`;
     subs[2].textContent = `${kev.filter(f=>f.severity==='High').length} exploited (KEV)`;
+    subs[7].textContent = `${kevCount} active findings`;
   }
 
   // Update donut center total
@@ -1835,7 +1836,7 @@ function updateStatHighlights() {
     if (sel) { sel.style.opacity = '1'; sel.style.borderColor = 'var(--accent)'; }
   }
   if (dashFilters.state === 'KEV') {
-    const sel = document.querySelector('#page-dashboard .stat-card:nth-child(2)');
+    const sel = document.querySelector('#page-dashboard .stat-card:nth-child(8)');
     if (sel) { sel.style.opacity = '1'; sel.style.borderColor = 'var(--accent)'; }
   }
   if (dashFilters.state === 'Aged') {
