@@ -481,6 +481,8 @@ select.input { cursor: pointer; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+.score-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:13px;color:var(--text-secondary)}
+.score-row .progress-bar{flex:none}
 </style>
 </head>
 <body>
@@ -721,6 +723,26 @@ select.input { cursor: pointer; }
         <div class="card" id="dispSummary" style="margin-top:4px">
           <div class="card-title" style="margin-bottom:12px">Disposition Breakdown — Active Findings</div>
           <div id="dispSummaryContent" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+        </div>
+
+        <!-- Executive Compliance Score -->
+        <div class="card" id="complianceScoreCard" style="margin-top:16px">
+          <div class="card-header"><h3>📊 Security Posture Overview</h3></div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+              <div style="text-align:center">
+                <div style="font-size:48px;font-weight:700;color:var(--accent)" id="overallScore">—%</div>
+                <div style="font-size:13px;color:var(--text-muted)">Overall Score</div>
+                <div style="font-size:11px;color:var(--text-muted)" id="scoreGrade">— (—)</div>
+              </div>
+              <div style="flex:1;min-width:200px">
+                <div class="score-row"><span>Patch Compliance</span><div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:0%" id="patchBar"></div></div><span id="patchPct">0%</span></div>
+                <div class="score-row"><span>Auto-Remediation</span><div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:0%" id="remediationBar"></div></div><span id="remediationPct">0%</span></div>
+                <div class="score-row"><span>KEV Response</span><div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:0%" id="kevBar"></div></div><span id="kevPct">0%</span></div>
+                <div class="score-row"><span>Finding Resolution</span><div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:0%" id="resolutionBar"></div></div><span id="resolutionPct">0%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
