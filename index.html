@@ -1868,9 +1868,9 @@ function renderCVEDetail(cveId) {
           </div>
         </div>
         <div style="text-align:right">
-          <a href="https://mrdchiang.github.io/patchflow/#/deploy-fix/${cveId}" target="_blank" class="btn btn-sm" style="font-size:13px;margin-bottom:6px;display:inline-block">🚀 Deploy via PatchFlow</a>
+          <a href="https://mrdchiang.github.io/remflow/#/deploy-fix/${cveId}" target="_blank" class="btn btn-sm" style="font-size:13px;margin-bottom:6px;display:inline-block">🚀 Remediate via RemFlow</a>
           <br>
-          <a href="https://mrdchiang.github.io/patchflow/#/create-remediation/${cveId}" target="_blank" class="btn btn-sm" style="font-size:13px;margin-bottom:6px;display:inline-block">🛠️ Create Remediation</a>
+          <a href="https://mrdchiang.github.io/remflow/#/create-remediation/${cveId}" target="_blank" class="btn btn-sm" style="font-size:13px;margin-bottom:6px;display:inline-block">🛠️ Plan in RemFlow</a>
           <br>
           <button class="btn btn-sm btn-primary" onclick="showCRDraft('${cveId}','${c.fix.replace(/'/g,"&#39;")}','${c.severity}','Assets: ${[...new Set(FINDINGS.filter(f=>f.cve===cveId&&f.state==='Active').map(f=>f.asset))].join(', ')}')" style="font-size:13px;margin-bottom:6px">📋 Draft CR</button>
           <br>
@@ -1982,6 +1982,61 @@ function updateDashboardStats() {
       </div>`;
     }).join('');
   }
+
+  // ===== Executive Compliance Score =====
+  const allFindings = FINDINGS;
+  const total = allFindings.length;
+
+  // Patch Compliance: findings with fixAvailable or looking at CVE data
+  const fixed = allFindings.filter(f => f.state === 'Fixed');
+  const patchPct = total > 0 ? Math.round((fixed.length / total) * 100) : 0;
+
+  // Auto-Remediation: remediations that are Completed — use Fixed / Actioned as proxy
+  const completedRem = allFindings.filter(f => f.state === 'Fixed' || f.disposition === 'Mitigation Applied');
+  const remediationPct = total > 0 ? Math.round((completedRem.length / total) * 100) : 0;
+
+  // KEV Response: KEV-tagged findings that are Fixed
+  const kevFindings = allFindings.filter(f => f.kev);
+  const kevFixed = kevFindings.filter(f => f.state === 'Fixed');
+  const kevPct = kevFindings.length > 0 ? Math.round((kevFixed.length / kevFindings.length) * 100) : 0;
+
+  // Finding Resolution: Fixed vs Active
+  const active = allFindings.filter(f => f.state === 'Active');
+  const resolutionPct = total > 0 ? Math.round(((total - active.length) / total) * 100) : 0;
+
+  // Overall score = average of all four
+  const overallScore = Math.round((patchPct + remediationPct + kevPct + resolutionPct) / 4);
+
+  // Letter grade
+  let letterScore, grade;
+  if (overallScore >= 90) { grade = 'A'; letterScore = 'Excellent'; }
+  else if (overallScore >= 80) { grade = 'B'; letterScore = 'Good'; }
+  else if (overallScore >= 70) { grade = 'C'; letterScore = 'Fair'; }
+  else if (overallScore >= 60) { grade = 'D'; letterScore = 'Poor'; }
+  else { grade = 'F'; letterScore = 'Critical'; }
+
+  // Set score color
+  const scoreColor = overallScore >= 80 ? 'var(--success)' : overallScore >= 60 ? 'var(--warning)' : 'var(--danger)';
+
+  // Update DOM
+  const overallEl = document.getElementById('overallScore');
+  if (overallEl) {
+    overallEl.textContent = overallScore + '%';
+    overallEl.style.color = scoreColor;
+  }
+  const gradeEl = document.getElementById('scoreGrade');
+  if (gradeEl) gradeEl.textContent = grade + ' (' + letterScore + ')';
+
+  const setPct = (id, barId, val) => {
+    const el = document.getElementById(id);
+    const bar = document.getElementById(barId);
+    if (el) el.textContent = val + '%';
+    if (bar) bar.style.width = val + '%';
+  };
+  setPct('patchPct', 'patchBar', patchPct);
+  setPct('remediationPct', 'remediationBar', remediationPct);
+  setPct('kevPct', 'kevBar', kevPct);
+  setPct('resolutionPct', 'resolutionBar', resolutionPct);
 }
 
 // ===== RENDER FINDINGS TABLE =====
