@@ -2001,8 +2001,8 @@ function updateDashboardStats() {
   const kevPct = kevFindings.length > 0 ? Math.round((kevFixed.length / kevFindings.length) * 100) : 0;
 
   // Finding Resolution: Fixed vs Active
-  const active = allFindings.filter(f => f.state === 'Active');
-  const resolutionPct = total > 0 ? Math.round(((total - active.length) / total) * 100) : 0;
+  const activeFindings = allFindings.filter(f => f.state === 'Active');
+  const resolutionPct = total > 0 ? Math.round(((total - activeFindings.length) / total) * 100) : 0;
 
   // Overall score = average of all four
   const overallScore = Math.round((patchPct + remediationPct + kevPct + resolutionPct) / 4);
